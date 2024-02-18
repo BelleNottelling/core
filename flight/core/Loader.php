@@ -40,6 +40,15 @@ class Loader
     protected static array $dirs = [];
 
     /**
+     * If this is true, the class names must be PascalCase
+     *  (underscores are not allowed in class names)
+     *  False will allow underscores in class names
+     *
+     * @var boolean
+     */
+    public static bool $v2_class_names = false;
+
+    /**
      * Registers a class.
      *
      * @param string $name Registry name
@@ -170,7 +179,7 @@ class Loader
      */
     public static function autoload(bool $enabled = true, $dirs = []): void
     {
-        if ($enabled) {
+        if ($enabled === true) {
             spl_autoload_register([__CLASS__, 'loadClass']);
         } else {
             spl_autoload_unregister([__CLASS__, 'loadClass']); // @codeCoverageIgnore
@@ -190,14 +199,14 @@ class Loader
      */
     public static function loadClass(string $class): void
     {
-        $classFile = str_replace(['\\', '_'], '/', $class) . '.php';
+        $replacementCharacters = self::$v2_class_names === true ? ['\\', '_'] : ['\\'];
+        $classFile = str_replace($replacementCharacters, '/', $class) . '.php';
 
         foreach (self::$dirs as $dir) {
             $filePath = "$dir/$classFile";
 
-            if (file_exists($filePath)) {
+            if (file_exists($filePath) === true) {
                 require_once $filePath;
-
                 return;
             }
         }

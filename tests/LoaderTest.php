@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace tests;
 
+use Error;
 use flight\core\Loader;
 use tests\classes\Factory;
 use tests\classes\User;
 use PHPUnit\Framework\TestCase;
 use tests\classes\TesterClass;
+use Throwable;
 
 class LoaderTest extends TestCase
 {
@@ -16,6 +18,7 @@ class LoaderTest extends TestCase
 
     protected function setUp(): void
     {
+		Loader::$v2_class_names = false;
         $this->loader = new Loader();
         $this->loader->autoload(true, __DIR__ . '/classes');
     }
@@ -152,4 +155,22 @@ class LoaderTest extends TestCase
             __DIR__ . '/classes'
         ], $loader->getDirectories());
     }
+
+	public function testV2ClassNamesFalse() {
+		$loader = new Loader;
+		Loader::$v2_class_names = false;
+		$loader->autoload(true, __DIR__ . '/classes');
+
+		//$this->expectException(Error::class);
+		new \tests\classes\Tester_Class;
+	}
+
+	public function testV2ClassNamesTrue() {
+		$loader = new Loader;
+		Loader::$v2_class_names = true;
+		$loader->autoload(true, __DIR__ . '/classes');
+
+		//$this->expectOutputString('Tester_Class');
+		new \tests\classes\Tester_Class;
+	}
 }

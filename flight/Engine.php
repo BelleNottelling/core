@@ -78,6 +78,9 @@ class Engine
     /** If the framework has been initialized or not. */
     protected bool $initialized = false;
 
+    /**
+     * Construct
+     */
     public function __construct()
     {
         $this->loader = new Loader();
